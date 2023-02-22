@@ -6,7 +6,6 @@ import 'package:customerapp/src/screens/billing/add_edit_card_page.dart';
 import 'package:customerapp/src/widgets/_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BillingHomePage extends StatelessWidget {

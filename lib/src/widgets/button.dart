@@ -36,7 +36,7 @@ class CButton extends StatelessWidget {
         if(onPressed != null) onPressed!.call();
       },
       style: ElevatedButton.styleFrom(
-        primary: color ?? CColors.primary,
+        backgroundColor: color ?? CColors.primary,
         elevation: 0,
         minimumSize: Size(double.infinity, 55),
         shape: RoundedRectangleBorder(

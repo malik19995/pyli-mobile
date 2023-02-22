@@ -144,7 +144,7 @@ class CreditCardWidget extends StatelessWidget {
                       height: 32,
                       child: TextButton.icon(
                         style: TextButton.styleFrom(
-                          primary: Colors.transparent,
+                          foregroundColor: Colors.transparent,
                         ),
                         onPressed: (){
                           if(onEdit != null) onEdit!.call();
@@ -168,7 +168,7 @@ class CreditCardWidget extends StatelessWidget {
                       height: 32,
                       child: TextButton.icon(
                         style: TextButton.styleFrom(
-                          primary: Colors.transparent,
+                          foregroundColor: Colors.transparent,
                         ),
                         onPressed: (){
                           if(onDelete != null) onDelete!.call();
