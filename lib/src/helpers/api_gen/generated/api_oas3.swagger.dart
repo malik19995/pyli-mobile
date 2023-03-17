@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:chopper/chopper.dart';
 
+import '../../api/endpoints.dart';
 import 'client_mapping.dart';
 import 'dart:async';
 import 'package:chopper/chopper.dart' as chopper;
@@ -26,6 +27,7 @@ abstract class ApiOas3 extends ChopperService {
     Iterable<dynamic>? interceptors,
   }) {
     if (client != null) {
+      // client.services = [_ApiOas3]
       return _$ApiOas3(client);
     }
 

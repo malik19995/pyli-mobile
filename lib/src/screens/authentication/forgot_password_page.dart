@@ -5,6 +5,8 @@ import 'package:customerapp/src/widgets/_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/_controllers.dart';
+
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
 
@@ -13,29 +15,30 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-
   bool loading = false;
   bool success = false;
 
-  final _emailController = TextEditingController();
+  final _controller = Get.find<AuthController>();
+
+  @override
+  void initState() {
+    _controller.reset();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             children: [
-
               Align(
-                alignment: Alignment.topLeft,
-                child: CBackButton(
-                  onTap: (){
+                  alignment: Alignment.topLeft,
+                  child: CBackButton(onTap: () {
                     Get.back();
-                  }
-                )
-              ),
+                  })),
               SizedBox(height: 12),
 
               /// top text
@@ -49,16 +52,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       Text(
                         success ? 'Email Sent!' : 'Forgot Password',
                         style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: CColors.primary_dark_max
-                        ),
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: CColors.primary_dark_max),
                       ),
                       Text(
-                        success ? 'Please check your email for further instructions' : 'Please enter your email',
-                        style: TextStyle(
-                            color: CColors.grey_light
-                        ),
+                        success
+                            ? 'Please check your email for further instructions'
+                            : 'Please enter your email',
+                        style: TextStyle(color: CColors.grey_light),
                       ),
                     ],
                   ),
@@ -71,39 +73,39 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 child: Column(
                   children: [
-                    if(!success) CTextField(
-                      controller: _emailController,
-                      header: 'Email',
-                    ),
+                    if (!success)
+                      CTextField(
+                        controller: _controller.emailController,
+                        header: 'Email',
+                      ),
                     SizedBox(height: 24),
                     CButton(
                       loading: loading,
-                      onPressed: success ?
-                      (){
-                        Get.back();
-                      }
-                          :
-                      () async{
-                        if(_emailController.text.isEmail){
-                          setState((){
-                            loading = true;
-                          });
-                          final res = await AuthRepo().resetPassword(_emailController.text);
-                          setState((){
-                            loading = false;
-                          });
-                          if(res.error){
-                            Snack.showErrorSnack(
-                              message: res.message
-                            );
-                          }else{
-                            setState((){
-                              success = true;
-                            });
-                          }
-                        }
-                      },
-                        label: success ? 'GO TO LOGIN' : 'RESET PASSWORD',
+                      onPressed: success
+                          ? () {
+                              Get.back();
+                            }
+                          : () async {
+                              if (_controller.emailController.text.isEmail) {
+                                setState(() {
+                                  loading = true;
+                                });
+                                final res = await _controller.resetPassword();
+                                setState(() {
+                                  loading = false;
+                                });
+                                if (res.error != null) {
+                                  Snack.showErrorSnack(
+                                      //TODO Handle error message
+                                      message: res.error?.toString());
+                                } else {
+                                  setState(() {
+                                    success = true;
+                                  });
+                                }
+                              }
+                            },
+                      label: success ? 'GO TO LOGIN' : 'RESET PASSWORD',
                     )
                   ],
                 ),

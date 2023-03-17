@@ -4,85 +4,70 @@ import 'package:customerapp/src/resources/_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:customerapp/src/helpers/string_helper.dart';
 
 class HomeDrawer extends StatelessWidget {
-  const  HomeDrawer({Key? key}) : super(key: key);
+  const HomeDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
-    final controller  = Get.find<HomeController>();
+    final profileController = Get.find<ProfileController>();
+    final homeController = Get.find<HomeController>();
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(10),
-          bottomRight: Radius.circular(10)
-        ),
-        color: Colors.white
-      ),
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(10), bottomRight: Radius.circular(10)),
+          color: Colors.white),
       width: Get.width * .8,
-      child: Obx((){
-        print(controller.activeDrawerIndex);
+      child: Obx(() {
+        print(homeController.activeDrawerIndex);
         return Column(
           children: [
             UserAccountsDrawerHeader(
               margin: EdgeInsets.zero,
-              decoration: BoxDecoration(
-                color: Colors.white
-              ),
+              decoration: BoxDecoration(color: Colors.white),
               currentAccountPicture: CircleAvatar(
                 child: FlutterLogo(),
               ),
               accountName: Text(
-                'user_name',
+                UserHelper.getFullName(profileController.userDetails),
                 style: TextStyle(
-                  color: CColors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700
-                ),
+                    color: CColors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700),
               ),
               accountEmail: Text(
-                'user_email@gmail.com',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: CColors.grey
-                ),
+                profileController.userDetails?.email ?? '--',
+                //'user_email@gmail.com',
+                style: TextStyle(fontSize: 12, color: CColors.grey),
               ),
             ),
-
             Expanded(
               child: ListView.builder(
                 itemCount: DrawerItemModel.drawerItems.length,
                 itemBuilder: (_, index) => _DrawerItem(
-                  label: DrawerItemModel.drawerItems[index].label,
-                  icon: DrawerItemModel.drawerItems[index].icon,
-                  active: controller.activeDrawerIndex.value == index,
-                  onTap: (){
-                    controller.activeDrawerIndex(index);
-                    controller.scaffoldKey.currentState!.closeDrawer();
-                  }
-                ),
+                    label: DrawerItemModel.drawerItems[index].label,
+                    icon: DrawerItemModel.drawerItems[index].icon,
+                    active: homeController.activeDrawerIndex.value == index,
+                    onTap: () {
+                      homeController.activeDrawerIndex(index);
+                      homeController.scaffoldKey.currentState!.closeDrawer();
+                    }),
               ),
             ),
-
             Container(
               height: 70,
               color: CColors.primary_dark,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    CIcons.swap_vert,
-                    color: Colors.white
-                  ),
+                  Image.asset(CIcons.swap_vert, color: Colors.white),
                   SizedBox(width: 4),
                   Text(
                     'Sites',
                     style: GoogleFonts.roboto(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400
-                    ),
+                        color: Colors.white, fontWeight: FontWeight.w400),
                   )
                 ],
               ),
@@ -99,7 +84,13 @@ class _DrawerItem extends StatelessWidget {
   final String icon;
   final VoidCallback onTap;
   final bool active;
-  const _DrawerItem({Key? key, required this.label,required this.icon,required this.active,required this.onTap}) : super(key: key);
+  const _DrawerItem(
+      {Key? key,
+      required this.label,
+      required this.icon,
+      required this.active,
+      required this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -123,13 +114,10 @@ class _DrawerItem extends StatelessWidget {
               color: active ? CColors.primary_dark : CColors.grey_light,
             ),
             SizedBox(width: 12),
-            Text(
-              label,
-              style: GoogleFonts.roboto(
-                fontWeight: FontWeight.w500,
-                color: active ? CColors.primary_dark : CColors.grey_light
-              )
-            )
+            Text(label,
+                style: GoogleFonts.roboto(
+                    fontWeight: FontWeight.w500,
+                    color: active ? CColors.primary_dark : CColors.grey_light))
           ],
         ),
       ),

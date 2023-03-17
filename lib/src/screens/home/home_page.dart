@@ -1,4 +1,5 @@
 import 'package:customerapp/src/controllers/_controllers.dart';
+import 'package:customerapp/src/controllers/profile_controller.dart';
 import 'package:customerapp/src/screens/billing/billing_home_page.dart';
 import 'package:customerapp/src/screens/contract/contract_page.dart';
 import 'package:customerapp/src/screens/dashboard/dash_board_page.dart';
@@ -17,6 +18,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
+    final profileController = Get.put(ProfileController());
+    profileController.getCurrentUserDetails();
 
     final pages = [
       DashBoardPage(),
@@ -29,13 +32,12 @@ class HomePage extends StatelessWidget {
       SupportPage(),
     ];
 
-    return Obx(()=>Scaffold(
-      key: controller.scaffoldKey,
-      backgroundColor: Colors.white,
-      appBar: HomeAppbar(),
-      drawer: HomeDrawer(),
-      body: pages[controller.activeDrawerIndex.value],
-    ));
+    return Obx(() => Scaffold(
+          key: controller.scaffoldKey,
+          backgroundColor: Colors.white,
+          appBar: HomeAppbar(),
+          drawer: HomeDrawer(),
+          body: pages[controller.activeDrawerIndex.value],
+        ));
   }
 }
-

@@ -4,8 +4,7 @@ import 'package:dio/dio.dart';
 
 import '_api.dart';
 
-class Api{
-
+class Api {
   Api._();
 
   static final _dio = Dio();
@@ -14,19 +13,18 @@ class Api{
   static const int _receiveTimeout = 30000;
 
   static final Map<String, dynamic> _headers = {
-    'Accept' : 'application/json',
-    'Content-Type' : 'application/json',
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
   };
 
   static final BaseOptions _options = BaseOptions(
-      connectTimeout: _connectTimeout,
-      receiveTimeout: _receiveTimeout
-  );
+      connectTimeout: _connectTimeout, receiveTimeout: _receiveTimeout);
 
-  static Dio _baseClient(bool authRequired){
-    if(authRequired){
+  static Dio _baseClient(bool authRequired) {
+    if (authRequired) {
       _headers.update(
-        'AUTHORIZATION', (existingValue) => 'Bearer ',
+        'AUTHORIZATION',
+        (existingValue) => 'Bearer ',
         ifAbsent: () => 'Bearer ',
       );
     }
@@ -38,12 +36,10 @@ class Api{
     return _dio;
   }
 
-  static AResponse _processData(String route, Response apiResponse){
-
+  static AResponse _processData(String route, Response apiResponse) {
     /// checking status code
     /// making sure it request was a success
-    if(apiResponse.statusCode! >= 200 || apiResponse.statusCode! < 300){
-
+    if (apiResponse.statusCode! >= 200 || apiResponse.statusCode! < 300) {
       /// logging result
       Log.i('------------DATA------------\n$route', apiResponse.data);
 
@@ -51,38 +47,35 @@ class Api{
         error: false,
         data: apiResponse.data,
       );
-
-    }else{
+    } else {
       /// logging result
       Log.e(route, apiResponse.statusMessage);
       return AResponse(
-        error: true,
-        message: 'Api Status Code: ${apiResponse.statusCode}\nMessage: ${apiResponse.statusMessage}'
-      );
+          error: true,
+          message:
+              'Api Status Code: ${apiResponse.statusCode}\nMessage: ${apiResponse.statusMessage}');
     }
   }
 
-  static String _processErrorMessage(dynamic error){
-
+  static String _processErrorMessage(dynamic error) {
     String errorMsg = '';
 
-    if(error is DioError){
-      if(error.response!.statusCode == 503){
+    if (error is DioError) {
+      if (error.response!.statusCode == 503) {
         errorMsg += 'Server maintenance';
         Snack.showErrorSnack(
-          title: 'Maintenance',
-          message: 'Our servers are currently under maintenance, try again after a few moments'
-        );
+            title: 'Maintenance',
+            message:
+                'Our servers are currently under maintenance, try again after a few moments');
         return errorMsg;
       }
 
-
-      if(error.type == DioErrorType.connectTimeout){
+      if (error.type == DioErrorType.connectTimeout) {
         errorMsg += 'Request timed out';
-      } else if(error.response!.statusCode! >= 400){
-        try{
+      } else if (error.response!.statusCode! >= 400) {
+        try {
           errorMsg += error.response!.data['detail'];
-        }catch(e){
+        } catch (e) {
           errorMsg += error.response!.toString();
         }
       }
@@ -93,138 +86,108 @@ class Api{
     return error.toString();
   }
 
-  static Future<AResponse> get(
-      String endpoint,
-      {
-        Map<String, dynamic> queryParams = const {},
-        String? baseUrl
-      }
-      )async{
-    try{
-
+  static Future<AResponse> get(String endpoint,
+      {Map<String, dynamic> queryParams = const {}, String? baseUrl}) async {
+    try {
       /// adding the authorization token base to requirements
       final client = _baseClient(ApiEndpoints.isAuthRequired(endpoint));
 
       /// logging route and data
-      final route  = 'GET $endpoint';
+      final route = 'GET $endpoint';
       Log.w(route, queryParams);
 
-      final apiResponse = await client.get(
-          endpoint,
-          queryParameters: queryParams
-      );
+      final apiResponse =
+          await client.get(endpoint, queryParameters: queryParams);
 
       return _processData(route, apiResponse);
-
-    }catch(e){
+    } catch (e) {
       final errorMsg = _processErrorMessage(e);
       Log.e(errorMsg, '**********$endpoint FAILED**********');
-      return AResponse(
-          error: true,
-          message: errorMsg
-      );
+      return AResponse(error: true, message: errorMsg);
     }
   }
 
   static Future<AResponse> post(
-      String endpoint,
-      {
-        Map<String, dynamic>? queryParams,
-        dynamic data,
-      }
-      )async{
-    try{
-
+    String endpoint, {
+    Map<String, dynamic>? queryParams,
+    dynamic data,
+  }) async {
+    try {
       /// adding the authorization token base to requirements
       final client = _baseClient(ApiEndpoints.isAuthRequired(endpoint));
 
       /// logging route and data
-      final route  = 'POST $endpoint';
+      final route = 'POST $endpoint';
       Log.w(route, queryParams ?? data);
 
-      final apiResponse = await client.post(
-          route,
-          queryParameters: queryParams,
-          data: data
-      );
+      final apiResponse =
+          await client.post(route, queryParameters: queryParams, data: data);
 
       return _processData(route, apiResponse);
-
-    }catch(e){
+    } catch (e) {
       final errorMsg = _processErrorMessage(e);
       Log.e(errorMsg, '**********$endpoint FAILED**********');
-      return AResponse(
-        error: true,
-        message: errorMsg
-      );
+      return AResponse(error: true, message: errorMsg);
     }
   }
 
   static Future<AResponse> put(
-      String endpoint,
-      {
-        Map<String, dynamic>? queryParams,
-        Map<String, dynamic> data = const {},
-      }
-      )async{
-    try{
-
+    String endpoint, {
+    Map<String, dynamic>? queryParams,
+    Map<String, dynamic> data = const {},
+  }) async {
+    try {
       /// adding the authorization token base to requirements
       final client = _baseClient(ApiEndpoints.isAuthRequired(endpoint));
 
       /// logging route and data
-      final route  = 'PUT $endpoint';
+      final route = 'PUT $endpoint';
       Log.w(route, queryParams ?? data);
 
-      final apiResponse = await client.put(
-          route,
-          queryParameters: queryParams,
-          data: data
-      );
+      final apiResponse =
+          await client.put(route, queryParameters: queryParams, data: data);
 
-      return _processData(route,apiResponse);
-
-    }catch(e){
+      return _processData(route, apiResponse);
+    } catch (e) {
       final errorMsg = _processErrorMessage(e);
       Log.e(errorMsg, '**********$endpoint FAILED**********');
-      return AResponse(
-          error: true,
-          message: errorMsg
-      );
+      return AResponse(error: true, message: errorMsg);
     }
   }
 
   static Future<AResponse> delete(
-      String endpoint,
-      {
-        Map<String, dynamic>? queryParams,
-        Map<String, dynamic> data = const {},
-      }
-      )async{
-    try{
-
+    String endpoint, {
+    Map<String, dynamic>? queryParams,
+    Map<String, dynamic> data = const {},
+  }) async {
+    try {
       /// adding the authorization token base to requirements
       final client = _baseClient(ApiEndpoints.isAuthRequired(endpoint));
 
       /// logging route and data
-      final route  = 'DELETE $endpoint';
+      final route = 'DELETE $endpoint';
       Log.w(route, queryParams ?? data);
 
-      final apiResponse = await client.delete(
-          route,
-          queryParameters: queryParams,
-          data: data
-      );
+      final apiResponse =
+          await client.delete(route, queryParameters: queryParams, data: data);
 
       return _processData(route, apiResponse);
-
-    }catch(e){
+    } catch (e) {
       final errorMsg = _processErrorMessage(e);
       Log.e(errorMsg, '**********$endpoint FAILED**********');
-      return AResponse(
-          error: true,
-          message: errorMsg
-      );
+      return AResponse(error: true, message: errorMsg);
     }
   }
 }
+
+
+//     final apiResponse = await generatedSwagerApi.apiV1CustomerSignupPost(
+//         body: CustomerRegister(
+//             businessId: 2,
+//             firstname: "Salal",
+//             lastname: "Haider",
+//             email: "salal.haider@live.com",
+//             password: "test@1234"),
+//       );
+
+//       Log.e(apiResponse);

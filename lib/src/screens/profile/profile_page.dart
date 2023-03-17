@@ -1,4 +1,6 @@
+import 'package:customerapp/src/helpers/string_helper.dart';
 import 'package:customerapp/src/resources/_resources.dart';
+import 'package:customerapp/src/screens/authentication/authentication_page.dart';
 import 'package:customerapp/src/screens/profile/change_password_page.dart';
 import 'package:customerapp/src/screens/profile/edit_profile_page.dart';
 import 'package:customerapp/src/widgets/_widgets.dart';
@@ -6,46 +8,46 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../controllers/_controllers.dart';
+
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final profileController = Get.put(ProfileController());
+    final authController = Get.find<AuthController>();
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
         margin: EdgeInsets.only(top: 14, left: 14, right: 14),
         child: Column(
           children: [
-
             Row(
               children: [
                 Expanded(
-                  child: CButton(
-                    onPressed: () => Get.to(()=>EditProfilePage()),
-                    color: CColors.primary_light,
-                    labelColor: CColors.primary,
-                    labelSize: 14,
-                    label: 'Edit Profile',
-                    icon: Icons.edit,
-                    iconColor: CColors.primary,
-                    )
-                ),
+                    child: CButton(
+                  onPressed: () => Get.to(() => EditProfilePage()),
+                  color: CColors.primary_light,
+                  labelColor: CColors.primary,
+                  labelSize: 14,
+                  label: 'Edit Profile',
+                  icon: Icons.edit,
+                  iconColor: CColors.primary,
+                )),
                 SizedBox(width: 20),
                 Expanded(
-                  child: CButton(
-                    onPressed: () => Get.to(()=>ChangePasswordPage()),
-                    color: CColors.yellow,
-                    labelColor: CColors.primary,
-                    labelSize: 14,
-                    label: 'Change Password',
-                    icon: Icons.lock,
-                    iconColor: CColors.primary,
-                  )
-                )
+                    child: CButton(
+                  onPressed: () => Get.to(() => ChangePasswordPage()),
+                  color: CColors.yellow,
+                  labelColor: CColors.primary,
+                  labelSize: 14,
+                  label: 'Change Password',
+                  icon: Icons.lock,
+                  iconColor: CColors.primary,
+                ))
               ],
             ),
-
             SizedBox(
               height: 25,
             ),
@@ -61,13 +63,12 @@ class ProfilePage extends StatelessWidget {
                     backgroundColor: CColors.primary_dark,
                     radius: 42,
                     child: Text(
-                      'JO',
+                      UserHelper.getInitials(profileController.userDetails),
                       style: GoogleFonts.roboto(
-                        fontSize: 32,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 2
-                      ),
+                          fontSize: 32,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 2),
                     ),
                   ),
                   SizedBox(
@@ -77,32 +78,30 @@ class ProfilePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Joshua Okwe",
+                        UserHelper.getFullName(profileController.userDetails),
                         style: GoogleFonts.roboto(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700
-                        ),
+                            fontSize: 18, fontWeight: FontWeight.w700),
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       Text(
-                        "joshuaokwe@gmail.com",
+                        profileController.userDetails?.email ?? '--',
                         style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF656565)),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF656565)),
                       ),
                       SizedBox(
                         height: 5,
                       ),
                       Text(
-                        "(603) 555-0123",
+                        profileController.userDetails?.phone ?? '--',
+                        //"(603) 555-0123",
                         style: GoogleFonts.roboto(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF656565)
-                        ),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF656565)),
                       ),
                     ],
                   )
@@ -118,12 +117,18 @@ class ProfilePage extends StatelessWidget {
               icon: Icons.logout,
               iconColor: CColors.red_bright,
               color: CColors.yellow,
+              onPressed: () async {
+                var res = await authController.logout();
+                if (res) {
+                  Get.off(AuthPage());
+                }
+              },
             ),
             SizedBox(
               height: 20,
             ),
             Container(
-              width: double.infinity          ,
+              width: double.infinity,
               padding: EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: CColors.greyf9,
@@ -135,27 +140,24 @@ class ProfilePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     InfoWidget(
-                      title: 'Date Joined',
-                      subtitle: 'January 2, 2020'
-                    ),
+                        title: 'Date Joined',
+                        subtitle: profileController.userDetails?.createdAt
+                                .toString() ??
+                            ''), //'January 2, 2020'),
                     InfoWidget(
                         title: 'Account Type',
-                        subtitle: 'Commercial Customer'
-                    ),
-                    InfoWidget(
-                        title: 'Sites Count',
-                        subtitle: '2'
-                    ),
+                        subtitle:
+                            profileController.userDetails?.userType ?? '--'),
+                    InfoWidget(title: 'Sites Count', subtitle: '2'), //TODO
                     SizedBox(height: 12),
-
-
                     Wrap(
-                      children: [1,2].map((e) => _SiteInfoWidget(
-                        siteName: 'Site $e',
-                        selected: 1 == e,
-                      )).toList(),
+                      children: [1, 2]
+                          .map((e) => _SiteInfoWidget(
+                                siteName: 'Site $e',
+                                selected: 1 == e,
+                              ))
+                          .toList(),
                     )
-
                   ],
                 ),
               ),
@@ -173,7 +175,9 @@ class ProfilePage extends StatelessWidget {
 class _SiteInfoWidget extends StatelessWidget {
   final bool selected;
   final String siteName;
-  const _SiteInfoWidget({Key? key,required this.siteName, this.selected = false}) : super(key: key);
+  const _SiteInfoWidget(
+      {Key? key, required this.siteName, this.selected = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -191,31 +195,29 @@ class _SiteInfoWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  siteName ,
+                  siteName,
                   style: GoogleFonts.roboto(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: CColors.primary
-                  ),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: CColors.primary),
                 ),
-
-                if(selected) Row(children: [
-                  Text(
-                    "currently selected",
-                    style: GoogleFonts.roboto(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 10,
-                      color: CColors.black
-                    ),
+                if (selected)
+                  Row(
+                    children: [
+                      Text(
+                        "currently selected",
+                        style: GoogleFonts.roboto(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 10,
+                            color: CColors.black),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.check_circle,
+                        color: CColors.black,
+                      )
+                    ],
                   ),
-                  SizedBox(width: 8),
-                  Icon(
-                    Icons.check_circle,
-                    color: CColors.black,
-                  )
-                ],),
-
-
               ],
             ),
           ),

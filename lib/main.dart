@@ -6,16 +6,32 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Future<void> main() async{
+import 'src/screens/authentication/authentication_page.dart';
 
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorage.init();
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key){
-    Get.put(AuthController());
+class MyApp extends StatefulWidget {
+  MyApp({Key? key}) : super(key: key) {
+    // Get.put(AuthController());
+  }
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final _authController = Get.put(
+    AuthController(),
+  );
+
+  @override
+  void initState() {
+    _authController.checkLoginStatus();
+    super.initState();
   }
 
   @override
@@ -26,18 +42,20 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.robotoTextTheme(),
         appBarTheme: AppBarTheme(
-          elevation: 0,
-          color: CColors.primary,
-          titleSpacing: 0,
-          titleTextStyle: GoogleFonts.roboto(
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            letterSpacing: 1,
-            fontSize: 20
-          )
-        ),
+            elevation: 0,
+            color: CColors.primary,
+            titleSpacing: 0,
+            titleTextStyle: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: 1,
+                fontSize: 20)),
       ),
-      home: const HomePage(),
+      home: Obx(
+        () => _authController.isLoggedIn.value
+            ? const HomePage()
+            : const AuthPage(),
+      ),
     );
   }
 }

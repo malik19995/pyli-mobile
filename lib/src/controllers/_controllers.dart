@@ -1,5 +1,6 @@
 export 'auth_controller.dart';
 export 'home_controller.dart';
+export 'profile_controller.dart';
 export 'dashboard_controller.dart';
 export 'sites_controller.dart';
 export 'file_controller.dart';
