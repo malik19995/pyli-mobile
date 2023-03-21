@@ -1,4 +1,5 @@
 import 'package:chopper/chopper.dart' as chopper;
+import 'package:customerapp/src/controllers/_controllers.dart';
 import 'package:customerapp/src/helpers/interceptors/custom_interceptor.dart';
 import 'package:customerapp/src/helpers/local_storage.dart';
 import 'package:customerapp/src/helpers/logger.dart';
@@ -15,6 +16,10 @@ import '../helpers/api_gen/generated/api_oas3.swagger.dart';
 import '../repository/auth_repo.dart';
 
 class AuthController extends GetxController {
+  static final AuthController get = Get.isRegistered<AuthController>()
+      ? Get.find()
+      : Get.put(AuthController());
+
   final AuthRepo _repo = AuthRepo();
 
   Rx<RegisterPageState> registerPageState = RegisterPageState.STEP1.obs;
@@ -37,6 +42,8 @@ class AuthController extends GetxController {
   TextEditingController manufactureController = TextEditingController();
   TextEditingController idNumberController = TextEditingController();
 
+  var profileController = ProfileController.get;
+
   RxBool loading = RxBool(false);
 
   Token? userResponse;
@@ -52,12 +59,12 @@ class AuthController extends GetxController {
       bool isTokenExpired = JwtDecoder.isExpired(authToken);
       if (isTokenExpired) {
         print('*********** Token Expired ************');
-        AccesTokenInterceptor.token = null;
+        AccessTokenInterceptor.token = null;
         localStorage.removeToken();
         isLoggedIn.value = false;
       } else {
         print('*********** Token Not Expired ************');
-        AccesTokenInterceptor.token = authToken;
+        AccessTokenInterceptor.token = authToken;
         isLoggedIn.value = true;
       }
     } else {
@@ -77,13 +84,13 @@ class AuthController extends GetxController {
     // Decode the response JSON
     var jsonResponse = jsonDecode(res.body);
 
-    if (res.statusCode == 200) {
+    if (res.statusCode >= 200 && res.statusCode < 300) {
       Log.e(
           'Login Manual Request Successful, Status Code ---->> ${res.statusCode}');
 
       if (jsonResponse?['access_token'] != null) {
         localStorage.saveToken(jsonResponse['access_token']);
-        AccesTokenInterceptor.token = jsonResponse['access_token'];
+        AccessTokenInterceptor.token = jsonResponse['access_token'];
         Get.off(
           const HomePage(),
         );
@@ -100,19 +107,6 @@ class AuthController extends GetxController {
       loading(false);
       return null;
     }
-
-    // if (res.error != null) {
-    //   Snack.showErrorSnack(
-    //     message: res.error?.toString(),
-    //   );
-    //   Log.e(res.error);
-    // } else {
-    //   localStorage.saveToken(res.body!.accessToken);
-    //   Get.off(
-    //     const HomePage(),
-    //   );
-    // }
-    loading(false);
     // return res;
   }
 
@@ -124,6 +118,85 @@ class AuthController extends GetxController {
     );
     loading(false);
     return res;
+  }
+
+  Future<bool> resetPasswordManually() async {
+    final res = await _repo.resetPasswordManually(
+      email: emailController.text,
+    );
+
+    // Decode the response JSON
+    var jsonResponse = jsonDecode(res.body);
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      Log.e(
+          'Password Reset Request Request Successful, Status Code ---->> ${res.statusCode}');
+      loading(false);
+      Snack.snack('Password reset request sent');
+      return true;
+    } else {
+      Log.e(
+          'Password Reset Request  Unsuccessful, Status Code ---->> ${res.statusCode}\n  $jsonResponse');
+      Snack.showErrorSnack(message: 'Password Reset Error');
+      loading(false);
+      return false;
+    }
+  }
+
+  Future<bool> changePassword() async {
+    loading(true);
+    final res = await _repo.changePassword(
+        userId: profileController.userDetails.value!.id!,
+        email: profileController.userDetails.value!.email!,
+        oldPassword: pass1Controller.text,
+        newPassword: pass2Controller.text);
+    loading(false);
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      Log.e(
+          'Password Reset Request Request Successful, Status Code ---->> ${res.statusCode}');
+      localStorage.saveToken(res.body.access_token);
+      AccessTokenInterceptor.token = res.body.access_token;
+      loading(false);
+      Snack.snack('Password changed successfully');
+      return true;
+    } else {
+      Log.e(
+          'Password Reset Request  Unsuccessful, Status Code ---->> ${res.statusCode}\n  ${res.body}');
+      Snack.showErrorSnack(message: 'Password change error');
+      loading(false);
+      return false;
+    }
+  }
+
+  Future<bool> changePasswordManually() async {
+    loading(true);
+    final res = await _repo.changePasswordManually(
+        userId: profileController.userDetails.value!.id!,
+        email: profileController.userDetails.value!.email!,
+        oldPassword: pass1Controller.text,
+        newPassword: pass2Controller.text);
+    loading(false);
+
+    var jsonResponse = jsonDecode(res.body);
+
+    Log.e('Change password response ---->> $jsonResponse');
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      Log.e(
+          'Password Reset Request Request Successful, Status Code ---->> ${res.statusCode}');
+      localStorage.saveToken(jsonResponse['access_token']);
+      AccessTokenInterceptor.token = jsonResponse['access_token'];
+      loading(false);
+      Snack.snack('Password changed successfully');
+      return true;
+    } else {
+      Log.e(
+          'Password Reset Request  Unsuccessful, Status Code ---->> ${res.statusCode}\n  $jsonResponse');
+      Snack.showErrorSnack(message: 'Password change error');
+      loading(false);
+      return false;
+    }
   }
 
   Future<bool> register() async {
@@ -146,7 +219,7 @@ class AuthController extends GetxController {
 
     loading(false);
 
-    if (res.statusCode == 200) {
+    if (res.statusCode >= 200 && res.statusCode < 300) {
       Log.e(
           'Registration Request Successful, Status Code ---->> ${res.statusCode}');
       return true;
@@ -159,7 +232,7 @@ class AuthController extends GetxController {
 
   Future<bool> logout() async {
     final res = await _repo.logout();
-    if (res.statusCode == 200) {
+    if (res.statusCode >= 200 && res.statusCode < 300) {
       localStorage.removeToken();
       return true;
     } else {

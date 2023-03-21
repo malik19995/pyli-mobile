@@ -19,155 +19,161 @@ class ProfilePage extends StatelessWidget {
     final authController = Get.find<AuthController>();
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: Container(
-        margin: EdgeInsets.only(top: 14, left: 14, right: 14),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                    child: CButton(
-                  onPressed: () => Get.to(() => EditProfilePage()),
-                  color: CColors.primary_light,
-                  labelColor: CColors.primary,
-                  labelSize: 14,
-                  label: 'Edit Profile',
-                  icon: Icons.edit,
-                  iconColor: CColors.primary,
-                )),
-                SizedBox(width: 20),
-                Expanded(
-                    child: CButton(
-                  onPressed: () => Get.to(() => ChangePasswordPage()),
-                  color: CColors.yellow,
-                  labelColor: CColors.primary,
-                  labelSize: 14,
-                  label: 'Change Password',
-                  icon: Icons.lock,
-                  iconColor: CColors.primary,
-                ))
-              ],
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: CColors.greyf9,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              padding: EdgeInsets.all(20),
-              child: Row(
+      child: Obx(() {
+        return Container(
+          margin: EdgeInsets.only(top: 14, left: 14, right: 14),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: CColors.primary_dark,
-                    radius: 42,
-                    child: Text(
-                      UserHelper.getInitials(profileController.userDetails),
-                      style: GoogleFonts.roboto(
-                          fontSize: 32,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 2),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        UserHelper.getFullName(profileController.userDetails),
-                        style: GoogleFonts.roboto(
-                            fontSize: 18, fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        profileController.userDetails?.email ?? '--',
-                        style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF656565)),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        profileController.userDetails?.phone ?? '--',
-                        //"(603) 555-0123",
-                        style: GoogleFonts.roboto(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF656565)),
-                      ),
-                    ],
-                  )
+                  Expanded(
+                      child: CButton(
+                    onPressed: () => Get.to(() => EditProfilePage()),
+                    color: CColors.primary_light,
+                    labelColor: CColors.primary,
+                    labelSize: 14,
+                    label: 'Edit Profile',
+                    icon: Icons.edit,
+                    iconColor: CColors.primary,
+                  )),
+                  SizedBox(width: 20),
+                  Expanded(
+                      child: CButton(
+                    onPressed: () => Get.to(() => ChangePasswordPage()),
+                    color: CColors.yellow,
+                    labelColor: CColors.primary,
+                    labelSize: 14,
+                    label: 'Change Password',
+                    icon: Icons.lock,
+                    iconColor: CColors.primary,
+                  ))
                 ],
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            CButton(
-              label: 'Logout',
-              labelColor: CColors.red_bright,
-              icon: Icons.logout,
-              iconColor: CColors.red_bright,
-              color: CColors.yellow,
-              onPressed: () async {
-                var res = await authController.logout();
-                if (res) {
-                  Get.off(AuthPage());
-                }
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: CColors.greyf9,
-                borderRadius: BorderRadius.circular(20),
+              SizedBox(
+                height: 25,
               ),
-              child: Container(
-                padding: EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              Container(
+                decoration: BoxDecoration(
+                  color: CColors.greyf9,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.all(20),
+                child: Row(
                   children: [
-                    InfoWidget(
-                        title: 'Date Joined',
-                        subtitle: profileController.userDetails?.createdAt
-                                .toString() ??
-                            ''), //'January 2, 2020'),
-                    InfoWidget(
-                        title: 'Account Type',
-                        subtitle:
-                            profileController.userDetails?.userType ?? '--'),
-                    InfoWidget(title: 'Sites Count', subtitle: '2'), //TODO
-                    SizedBox(height: 12),
-                    Wrap(
-                      children: [1, 2]
-                          .map((e) => _SiteInfoWidget(
-                                siteName: 'Site $e',
-                                selected: 1 == e,
-                              ))
-                          .toList(),
+                    CircleAvatar(
+                      backgroundColor: CColors.primary_dark,
+                      radius: 42,
+                      child: Text(
+                        UserHelper.getInitials(
+                            profileController.userDetails.value),
+                        style: GoogleFonts.roboto(
+                            fontSize: 32,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 2),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          UserHelper.getFullName(
+                              profileController.userDetails.value),
+                          style: GoogleFonts.roboto(
+                              fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          profileController.userDetails.value?.email ?? '--',
+                          style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF656565)),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          profileController.userDetails.value?.phone ?? '--',
+                          //"(603) 555-0123",
+                          style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF656565)),
+                        ),
+                      ],
                     )
                   ],
                 ),
               ),
-            ),
-            SizedBox(
-              height: 50,
-            ),
-          ],
-        ),
-      ),
+              SizedBox(
+                height: 20,
+              ),
+              CButton(
+                label: 'Logout',
+                labelColor: CColors.red_bright,
+                icon: Icons.logout,
+                iconColor: CColors.red_bright,
+                color: CColors.yellow,
+                onPressed: () async {
+                  var res = await authController.logout();
+                  if (res) {
+                    Get.off(AuthPage());
+                  }
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: CColors.greyf9,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Container(
+                  padding: EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InfoWidget(
+                          title: 'Date Joined',
+                          subtitle: profileController
+                                  .userDetails.value?.createdAt
+                                  .toString() ??
+                              ''), //'January 2, 2020'),
+                      InfoWidget(
+                          title: 'Account Type',
+                          subtitle:
+                              profileController.userDetails.value?.userType ??
+                                  '--'),
+                      InfoWidget(title: 'Sites Count', subtitle: '2'), //TODO
+                      SizedBox(height: 12),
+                      Wrap(
+                        children: [1, 2]
+                            .map((e) => _SiteInfoWidget(
+                                  siteName: 'Site $e',
+                                  selected: 1 == e,
+                                ))
+                            .toList(),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 50,
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

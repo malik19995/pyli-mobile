@@ -1,10 +1,7 @@
-import 'package:customerapp/src/helpers/logger.dart';
-import 'package:customerapp/src/helpers/snack.dart';
 import 'package:customerapp/src/helpers/text_validators.dart';
 import 'package:customerapp/src/resources/_resources.dart';
 import 'package:customerapp/src/screens/authentication/forgot_password_page.dart';
 import 'package:customerapp/src/screens/authentication/register_page.dart';
-import 'package:customerapp/src/screens/home/home_page.dart';
 import 'package:customerapp/src/widgets/_widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

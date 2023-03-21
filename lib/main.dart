@@ -27,6 +27,9 @@ class _MyAppState extends State<MyApp> {
   final _authController = Get.put(
     AuthController(),
   );
+  final profileController = Get.put(
+    ProfileController(),
+  );
 
   @override
   void initState() {

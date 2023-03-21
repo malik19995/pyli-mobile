@@ -90,15 +90,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 setState(() {
                                   loading = true;
                                 });
-                                final res = await _controller.resetPassword();
+                                final res =
+                                    await _controller.resetPasswordManually();
                                 setState(() {
                                   loading = false;
                                 });
-                                if (res.error != null) {
-                                  Snack.showErrorSnack(
-                                      //TODO Handle error message
-                                      message: res.error?.toString());
-                                } else {
+                                if (res) {
                                   setState(() {
                                     success = true;
                                   });

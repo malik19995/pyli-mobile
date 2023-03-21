@@ -31,14 +31,14 @@ class HomeDrawer extends StatelessWidget {
                 child: FlutterLogo(),
               ),
               accountName: Text(
-                UserHelper.getFullName(profileController.userDetails),
+                UserHelper.getFullName(profileController.userDetails.value),
                 style: TextStyle(
                     color: CColors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w700),
               ),
               accountEmail: Text(
-                profileController.userDetails?.email ?? '--',
+                profileController.userDetails.value?.email ?? '--',
                 //'user_email@gmail.com',
                 style: TextStyle(fontSize: 12, color: CColors.grey),
               ),

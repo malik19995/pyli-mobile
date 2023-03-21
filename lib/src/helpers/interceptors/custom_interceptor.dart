@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:chopper/chopper.dart';
 import 'package:customerapp/src/helpers/logger.dart';
 
-class AccesTokenInterceptor implements RequestInterceptor {
+class AccessTokenInterceptor implements RequestInterceptor {
   static late String? token;
 
   @override

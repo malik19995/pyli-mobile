@@ -11,7 +11,7 @@ class UserRepo {
       HttpLoggingInterceptor(
         level: Level.body,
       ),
-      AccesTokenInterceptor(),
+      AccessTokenInterceptor(),
     ],
   );
 

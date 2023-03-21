@@ -11,7 +11,7 @@ class ApiClient {
         chopper.HttpLoggingInterceptor(
           level: chopper.Level.body,
         ),
-        AccesTokenInterceptor(),
+        AccessTokenInterceptor(),
       ],
     );
   }

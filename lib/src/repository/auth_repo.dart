@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chopper/chopper.dart';
 import 'package:customerapp/src/helpers/api/_api.dart';
 import 'package:customerapp/src/helpers/api_gen/generated/api_oas3.swagger.dart';
@@ -12,7 +14,7 @@ class AuthRepo {
         HttpLoggingInterceptor(
           level: Level.body,
         ),
-        AccesTokenInterceptor(),
+        AccessTokenInterceptor(),
       ],
       converter: FormUrlEncodedConverter(),
       baseUrl: Uri.parse(
@@ -166,6 +168,62 @@ class AuthRepo {
   }) async {
     return await swaggerClient.apiV1AuthPasswordResetPost(
         body: PasswordReset(email: email));
+  }
+
+  Future<http.Response> resetPasswordManually({
+    required String email,
+  }) async {
+    Map body = {
+      "email": email,
+    };
+    var response = await http.post(
+      Uri.parse('${ApiEndpoints.baseUrl}/api/v1/auth/password/reset'),
+      headers: {
+        'Accept': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+    return response;
+  }
+
+  Future<Response> changePassword({
+    required int userId,
+    required String email,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    return await swaggerClient.apiV1AuthPasswordChangePost(
+      body: PasswordChange(
+        userId: userId,
+        email: email,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      ),
+    );
+  }
+
+  Future<http.Response> changePasswordManually({
+    required int userId,
+    required String email,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    Map body = {
+      "user_id": userId,
+      "email": email,
+      "old_password": oldPassword,
+      "new_password": newPassword
+    };
+    var response = await http.post(
+      Uri.parse('${ApiEndpoints.baseUrl}/api/v1/auth/password/change'),
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ${AccessTokenInterceptor.token}',
+      },
+      body: jsonEncode(body),
+    );
+
+    return response;
   }
 
   Future<Response> logout() async {
